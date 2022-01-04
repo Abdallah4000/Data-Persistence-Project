@@ -11,17 +11,33 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    private int m_Points = 0;
     
     private bool m_GameOver = false;
+
+    private string PlayerName = "Player";
+    private int HScore = 0;
 
     
     // Start is called before the first frame update
     void Start()
     {
+        if(DataSaver.Instance.PlayerName != null)
+        {
+            PlayerName = DataSaver.Instance.PlayerName;
+            HScore = DataSaver.Instance.HighScore;
+
+            BestScoreText.text = $"Best Score {PlayerName} : {HScore}";
+        }
+        
+
+
+
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -60,12 +76,28 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        if(HScore<m_Points)
+        {
+            HScore = m_Points;
+            PlayerName = DataSaver.Instance.PlayerName2;
+            DataSaver.Instance.HighScore = HScore;
+            DataSaver.Instance.PlayerName = DataSaver.Instance.PlayerName2;
+            ScoreText.text = $"Score : {m_Points}";
+            BestScoreText.text = $"Best Score {PlayerName} : {m_Points}";
+            DataSaver.Instance.SavePlayerName();
+        }
+        else
+        {
+            ScoreText.text = $"Score : {m_Points}";
+        }
+
+
     }
 
     public void GameOver()
